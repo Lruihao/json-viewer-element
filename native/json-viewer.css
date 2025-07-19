@@ -1,0 +1,46 @@
+/* 变量，便于换肤 */
+.jv-light {
+  --bg: #fff;
+  --key: #111;
+  --string: #42b983;
+  --number: #fc1e70;
+  --boolean: #fc1e70;
+  --null: #e08331;
+  --toggle: #49b3ff;
+}
+
+.jv-dark {
+  --bg: #1e1e1e;
+  --key: #9cdcfe;
+  --string: #ce9178;
+  --number: #b5cea8;
+  --boolean: #569cd6;
+  --null: #dcdcaa;
+  --toggle: #569cd6;
+}
+
+.jv-root {
+  font-family: Consolas, Menlo, Courier, monospace;
+  font-size: 14px;
+  background: var(--bg);
+  padding: 10px;
+  position: relative;
+}
+
+.jv-copy {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.jv-node.collapsed > .jv-list { display: none; }
+.jv-node.collapsed > .jv-toggle:before { content: '▸'; }
+.jv-toggle { cursor: pointer; color: var(--toggle); user-select: none; }
+
+.jv-key { color: var(--key); }
+.jv-string { color: var(--string); }
+.jv-number { color: var(--number); }
+.jv-boolean { color: var(--boolean); }
+.jv-null { color: var(--null); }

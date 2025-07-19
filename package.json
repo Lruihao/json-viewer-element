@@ -1,0 +1,38 @@
+{
+  "name": "json-viewer-element",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "A custom element for viewing and interacting with JSON data.",
+  "main": "dist/json-viewer-element.es.js",
+  "types": "dist/json-viewer-element.d.ts",
+  "files": [
+    "dist",
+    "src/themes"
+  ],
+  "keywords": [
+    "json-viewer",
+    "web-component",
+    "custom-element",
+    "lit-element"
+  ],
+  "homepage": "https://github.com/Lruihao/json-viewer-element#readme",
+  "bugs": {
+    "url": "https://github.com/Lruihao/json-viewer-element/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Lruihao/json-viewer-element.git"
+  },
+  "license": "MIT",
+  "author": "Lruihao (https://lruihao.cn)",
+  "scripts": {
+    "dev": "vite example",
+    "build": "vite build && npm run build:dts",
+    "build:dts": "tsc --emitDeclarationOnly --outDir dist"
+  },
+  "devDependencies": {
+    "typescript": "^5.5.3",
+    "vite": "^5.3.4",
+    "vite-plugin-dts": "^3.9.1"
+  }
+}
