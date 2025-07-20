@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8"/>
   <title>JSON Viewer Element</title>
-  <script type="module">
+  <script type="module" defer>
     import { JsonViewerElement } from '../dist/json-viewer-element.es.js';
     // 注册（已自动注册，可省）
     // customElements.define('json-viewer', JsonViewerElement);
@@ -15,8 +15,9 @@
       expand-depth="2"
       copyable
       sort
+      parse
       theme="dark"
-      show-array-index>
+      >
     </json-viewer>
   </div>
 
@@ -28,15 +29,17 @@
       date: new Date().toISOString(),
       fn: () => {},
       arr: [1, 2, 5],
-      reg: /ab+c/i
+      reg: /ab+c/i,
+      emptyArr: [],
+      emptyObj: {},
     };
-    // document.getElementById('jv').value = data;
-    document.getElementById('jv').setAttribute('value', JSON.stringify(data));
-    
-
-    document.getElementById('jv').addEventListener('keyclick', (e) => {
-      console.log('key clicked:', e.detail);
+    const jv = document.getElementById('jv');
+    document.addEventListener('DOMContentLoaded', () => {
+      console.log('DOM fully loaded and parsed');
+      // 直接设置值
+      jv.value = data;
     });
+    // jv.setAttribute('value', JSON.stringify(data));
   </script>
 </body>
 </html>
