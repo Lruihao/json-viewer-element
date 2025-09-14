@@ -1,45 +1,132 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
-<head>
-  <meta charset="utf-8"/>
-  <title>JSON Viewer Element</title>
-  <script type="module" defer>
-    import { JsonViewerElement } from '../dist/json-viewer-element.es.js';
-    // 注册（已自动注册，可省）
-    // customElements.define('json-viewer', JsonViewerElement);
-  </script>
-</head>
-<body>
-  <div style="width: 500px;">
-    <json-viewer id="jv"
-      expand-depth="2"
-      copyable
-      sort
-      parse
-      theme="dark"
-      >
-    </json-viewer>
-  </div>
+  <head>
+    <meta charset="utf-8" />
+    <title>&lt;json-viewer&gt; Element</title>
+    <script type="module" defer>
+      import { JsonViewerElement } from '../dist/json-viewer-element.es.js'
+    </script>
+    <style>
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+        line-height: 1.6;
+      }
+      .demo {
+        margin-bottom: 30px;
+        border: 1px solid #eee;
+        border-radius: 8px;
+        padding: 20px;
+        background: #fafafa;
+      }
+      .demo h3 {
+        margin-top: 0;
+        color: #333;
+      }
+      .demo p {
+        color: #666;
+        margin-bottom: 15px;
+      }
+      .feature-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 20px;
+        margin-top: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>&lt;json-viewer&gt; Element 功能演示</h1>
 
-  <script>
-    const data = {
-      name: 'Lruihao',
-      age: 18,
-      isMan: false,
-      date: new Date().toISOString(),
-      fn: () => {},
-      arr: [1, 2, 5],
-      reg: /ab+c/i,
-      emptyArr: [],
-      emptyObj: {},
-    };
-    const jv = document.getElementById('jv');
-    document.addEventListener('DOMContentLoaded', () => {
-      console.log('DOM fully loaded and parsed');
-      // 直接设置值
-      jv.value = data;
-    });
-    // jv.setAttribute('value', JSON.stringify(data));
-  </script>
-</body>
+    <div class="demo">
+      <h3>🎨 基础功能展示</h3>
+      <p>包含所有核心功能：boxed 边框、copyable 复制、sort 排序、展开深度控制</p>
+      <json-viewer id="basic" boxed copyable sort expand-depth="2"></json-viewer>
+    </div>
+
+    <div class="feature-list">
+      <div class="demo">
+        <h3>📋 自定义复制功能</h3>
+        <p>中文界面、左对齐、3 秒延迟</p>
+        <json-viewer
+          id="copy-custom"
+          copyable='{"copyText":"复制","copiedText":"已复制","timeout":3000,"align":"left"}'
+          boxed
+          expand-depth="1"
+        ></json-viewer>
+      </div>
+
+      <div class="demo">
+        <h3>🔒 简洁模式</h3>
+        <p>无边框、无复制按钮、不排序</p>
+        <json-viewer id="simple" expand-depth="1"></json-viewer>
+      </div>
+
+      <div class="demo">
+        <h3>📁 深层展开</h3>
+        <p>展开深度为 3 层，查看深层嵌套数据</p>
+        <json-viewer id="deep" boxed sort expand-depth="3"></json-viewer>
+      </div>
+
+      <!-- <div class="demo">
+        <h3>📊 数组数据</h3>
+        <p>专门展示数组类型数据的渲染效果</p>
+        <json-viewer id="array" boxed copyable></json-viewer>
+      </div> -->
+    </div>
+
+    <script>
+      const data = {
+        name: 'Lruihao',
+        age: 18,
+        isActive: true,
+        score: null,
+        date: new Date(),
+        fn: () => {},
+        regex: /ab+c/i,
+        tags: ['developer', 'javascript', 'typescript'],
+        emptyArray: [],
+        emptyObject: {},
+        profile: {
+          social: {
+            github: 'Lruihao',
+            twitter: '@liruihao',
+            website: 'https://lruihao.cn',
+          },
+          skills: ['JavaScript', 'TypeScript', 'Vue', 'React'],
+          experience: {
+            years: 5,
+            level: 'Senior',
+            projects: [
+              { name: 'Project A', status: 'completed' },
+              { name: 'Project B', status: 'in-progress' },
+            ],
+          },
+        },
+      }
+
+      const arrayData = [
+        { id: 1, name: 'Alice', active: true },
+        { id: 2, name: 'Bob', active: false },
+        { id: 3, name: 'Charlie', active: true },
+        'simple string',
+        42,
+        null,
+        [1, 2, 3],
+      ]
+
+      document.addEventListener('DOMContentLoaded', () => {
+        // 为所有组件设置数据
+        document.getElementById('basic').value = data
+        document.getElementById('copy-custom').value = data
+        document.getElementById('simple').value = data
+        document.getElementById('deep').value = data
+        // document.getElementById('array').value = arrayData
+
+        console.log('JSON Viewer Element 演示页面已加载完成')
+      })
+    </script>
+  </body>
 </html>
