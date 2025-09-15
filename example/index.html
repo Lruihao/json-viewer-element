@@ -35,6 +35,10 @@
         gap: 20px;
         margin-top: 20px;
       }
+      @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.7; }
+      }
     </style>
   </head>
   <body>
@@ -70,11 +74,11 @@
         <json-viewer id="deep" boxed sort expand-depth="3"></json-viewer>
       </div>
 
-      <!-- <div class="demo">
+      <div class="demo">
         <h3>📊 数组数据</h3>
         <p>专门展示数组类型数据的渲染效果</p>
         <json-viewer id="array" boxed copyable></json-viewer>
-      </div> -->
+      </div>
 
       <div class="demo">
         <h3>🎨 自定义复制按钮</h3>
@@ -121,9 +125,9 @@
 
             <div class="demo">
         <h3>🎛️ 自定义按钮行为控制</h3>
-        <p>通过 copyable 属性控制是否启用默认复制行为</p>
+        <p>使用自定义 slot 按钮，完全覆盖默认复制行为，实现自定义功能</p>
         <json-viewer id="custom-control" boxed copyable expand-depth="1">
-          <button slot="copy-button" copyable="false" style="
+          <button slot="copy-button" style="
             background: #6c757d;
             color: white;
             border: none;
@@ -131,10 +135,107 @@
             border-radius: 4px;
             cursor: pointer;
             font-size: 12px;
-          " onclick="alert('这是自定义点击事件，不会复制JSON数据')">
+          " onclick="handleCustomClick()">
             自定义行为
           </button>
         </json-viewer>
+        <div id="custom-result" style="margin-top: 10px; padding: 8px; border-radius: 4px; display: none;"></div>
+      </div>
+
+      <div class="demo">
+        <h3>🔄 折叠展开控制</h3>
+        <p>展示折叠按钮功能和省略号点击展开</p>
+        <json-viewer id="toggle-demo" boxed copyable expand-depth="0">
+          <button slot="copy-button" style="
+            background: #17a2b8;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+          ">
+            📋 复制
+          </button>
+        </json-viewer>
+      </div>
+
+      <div class="demo">
+        <h3>📝 字符串解析模式</h3>
+        <p>parse="false" 时将字符串原样显示，不进行 JSON 解析</p>
+        <json-viewer id="parse-demo" boxed copyable parse="false" expand-depth="1"></json-viewer>
+      </div>
+
+      <div class="demo">
+        <h3>🎨 各种数据类型展示</h3>
+        <p>完整展示所有支持的数据类型：字符串、数字、布尔值、null、日期、函数、正则等</p>
+        <json-viewer id="types-demo" boxed copyable sort expand-depth="2"></json-viewer>
+      </div>
+
+      <div class="demo">
+        <h3>⏭️ 空数据处理</h3>
+        <p>展示空对象和空数组的渲染效果</p>
+        <json-viewer id="empty-demo" boxed copyable expand-depth="1"></json-viewer>
+      </div>
+
+      <div class="demo">
+        <h3>🎯 交互式功能测试</h3>
+        <p>测试所有交互功能：折叠/展开、复制、事件触发等</p>
+        <div style="margin-bottom: 10px;">
+          <button onclick="toggleAllNodes()" style="margin-right: 10px; padding: 5px 10px;">全部折叠/展开</button>
+          <button onclick="changeData()" style="margin-right: 10px; padding: 5px 10px;">更换数据</button>
+          <button onclick="toggleSort()" style="padding: 5px 10px;">切换排序</button>
+        </div>
+        <json-viewer id="interactive-demo" boxed copyable sort expand-depth="1">
+          <button slot="copy-button" style="
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            animation: pulse 2s infinite;
+          ">
+            🚀 智能复制
+          </button>
+        </json-viewer>
+        <div id="interaction-log" style="
+          margin-top: 10px;
+          padding: 10px;
+          background: #f8f9fa;
+          border-left: 4px solid #007bff;
+          border-radius: 4px;
+          font-family: monospace;
+          font-size: 12px;
+          max-height: 200px;
+          overflow-y: auto;
+        ">
+          <div><strong>事件日志：</strong></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="demo">
+      <h3>📊 功能对比表</h3>
+      <p>不同配置下的功能对比展示</p>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+        <div>
+          <h4>最小配置</h4>
+          <json-viewer id="minimal"></json-viewer>
+        </div>
+        <div>
+          <h4>基础配置</h4>
+          <json-viewer id="basic-config" boxed copyable></json-viewer>
+        </div>
+        <div>
+          <h4>完整配置</h4>
+          <json-viewer id="full-config" boxed copyable sort expand-depth="2">
+            <button slot="copy-button" style="background: #007acc; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer; font-size: 11px;">
+              📋 复制
+            </button>
+          </json-viewer>
+        </div>
       </div>
     </div>
 
@@ -184,7 +285,7 @@
         document.getElementById('copy-custom').value = data
         document.getElementById('simple').value = data
         document.getElementById('deep').value = data
-        // document.getElementById('array').value = arrayData
+        document.getElementById('array').value = arrayData
 
         // 自定义复制按钮测试数据
         document.getElementById('custom-copy').value = {
@@ -200,7 +301,68 @@
         
         document.getElementById('custom-control').value = {
           message: 'Custom button behavior',
-          description: 'This button will not copy JSON data'
+          description: 'This button will copy JSON data and show alert'
+        };
+
+        // 折叠展开演示数据
+        document.getElementById('toggle-demo').value = {
+          level1: {
+            level2: {
+              level3: {
+                deepData: 'This is deeply nested',
+                moreData: [1, 2, 3, 4, 5]
+              },
+              siblingData: 'At level 2'
+            },
+            anotherBranch: {
+              info: 'Another branch at level 2',
+              data: { nested: true }
+            }
+          },
+          topLevel: ['item1', 'item2', 'item3']
+        };
+
+        // 字符串解析演示
+        document.getElementById('parse-demo').value = '{"stringified": "json", "will": "not", "be": "parsed"}';
+
+        // 各种数据类型演示
+        document.getElementById('types-demo').value = {
+          string: 'Hello World',
+          number: 42,
+          float: 3.14159,
+          boolean_true: true,
+          boolean_false: false,
+          null_value: null,
+          // undefined_value: undefined,
+          date: new Date('2024-01-01'),
+          function: function() { return 'test'; },
+          arrow_function: () => 'arrow',
+          regexp: /pattern/gi,
+          bigint: BigInt(123456789),
+          symbol: Symbol('test'),
+          array: [1, 'two', true, null],
+          nested_object: {
+            deep: {
+              deeper: {
+                value: 'found me!'
+              }
+            }
+          }
+        };
+
+        // 空数据处理演示
+        document.getElementById('empty-demo').value = {
+          emptyObject: {},
+          emptyArray: [],
+          nullValue: null,
+          // undefinedValue: undefined,
+          emptyString: '',
+          zeroNumber: 0,
+          falseBoolean: false,
+          nested: {
+            stillEmpty: {},
+            emptyArrayToo: []
+          }
         };
         
         // 自定义复制行为事件处理
@@ -234,8 +396,124 @@
           }, 3000);
         });
 
+        // 交互式功能测试数据
+        document.getElementById('interactive-demo').value = {
+          currentTime: new Date().toISOString(),
+          userAgent: navigator.userAgent,
+          features: {
+            localStorage: 'localStorage' in window,
+            sessionStorage: 'sessionStorage' in window,
+            webGL: 'WebGLRenderingContext' in window,
+            webAudio: 'AudioContext' in window,
+          },
+          performance: {
+            memory: performance.memory ? performance.memory : 'not available',
+            timing: performance.timing ? {
+              navigationStart: performance.timing.navigationStart,
+              loadEventEnd: performance.timing.loadEventEnd
+            } : 'not available'
+          }
+        };
+
+        // 对比表数据
+        const simpleData = { name: 'Simple', version: '1.0' };
+        document.getElementById('minimal').value = simpleData;
+        document.getElementById('basic-config').value = simpleData;
+        document.getElementById('full-config').value = simpleData;
+
+        // 事件监听
+        const interactiveViewer = document.getElementById('interactive-demo');
+        const logContainer = document.getElementById('interaction-log');
+        
+        function addLog(message) {
+          const logEntry = document.createElement('div');
+          logEntry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+          logEntry.style.marginBottom = '2px';
+          logContainer.appendChild(logEntry);
+          logContainer.scrollTop = logContainer.scrollHeight;
+        }
+
+        // 监听toggle事件
+        interactiveViewer.addEventListener('toggle', (e) => {
+          addLog(`节点${e.detail.isCollapsed ? '折叠' : '展开'}`);
+        });
+
+        // 监听复制事件
+        interactiveViewer.addEventListener('copy-success', (e) => {
+          addLog(`复制成功 - ${e.detail.text.length} 字符`);
+        });
+
+        interactiveViewer.addEventListener('copy-error', (e) => {
+          addLog('复制失败');
+        });
+
         console.log('JSON Viewer Element 演示页面已加载完成')
       })
+
+      // 交互功能实现
+      let isCollapsed = false;
+      function toggleAllNodes() {
+        const viewer = document.getElementById('interactive-demo');
+        const nodes = viewer.shadowRoot.querySelectorAll('.jv-node');
+        nodes.forEach(node => {
+          if (isCollapsed) {
+            node.classList.remove('collapsed');
+          } else {
+            node.classList.add('collapsed');
+          }
+        });
+        isCollapsed = !isCollapsed;
+      }
+
+      let dataIndex = 0;
+      const testDataSets = [
+        { type: 'user', name: 'Alice', age: 25, skills: ['JS', 'CSS'] },
+        { items: [1, 2, 3], total: 6, active: true },
+        { config: { theme: 'dark', lang: 'zh' }, timestamp: Date.now() }
+      ];
+
+      function changeData() {
+        const viewer = document.getElementById('interactive-demo');
+        viewer.value = testDataSets[dataIndex % testDataSets.length];
+        dataIndex++;
+      }
+
+      let sortEnabled = true;
+      function toggleSort() {
+        const viewer = document.getElementById('interactive-demo');
+        sortEnabled = !sortEnabled;
+        if (sortEnabled) {
+          viewer.setAttribute('sort', '');
+        } else {
+          viewer.removeAttribute('sort');
+        }
+      }
+
+      // 自定义按钮点击处理
+      function handleCustomClick() {
+        const resultDiv = document.getElementById('custom-result');
+        const viewer = document.getElementById('custom-control');
+        const jsonData = viewer.value;
+        
+        // 显示自定义操作结果
+        resultDiv.style.display = 'block';
+        resultDiv.style.background = '#e1f5fe';
+        resultDiv.style.color = '#01579b';
+        resultDiv.style.border = '1px solid #81d4fa';
+        resultDiv.innerHTML = `
+          <strong>🎯 自定义操作执行成功！</strong><br>
+          <small>数据类型: ${Array.isArray(jsonData) ? 'Array' : typeof jsonData}</small><br>
+          <small>键数量: ${typeof jsonData === 'object' && jsonData !== null ? Object.keys(jsonData).length : 'N/A'}</small><br>
+          <small>操作时间: ${new Date().toLocaleTimeString()}</small>
+        `;
+        
+        // 3秒后隐藏结果
+        setTimeout(() => {
+          resultDiv.style.display = 'none';
+        }, 3000);
+        
+        console.log('自定义按钮被点击，数据：', jsonData);
+      }
     </script>
   </body>
 </html>

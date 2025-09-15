@@ -15,12 +15,14 @@ export interface JsonViewerElementProps {
   parse?: boolean;
 }
 
+const togglerSvg = 'data:image/svg+xml;charset=utf-8;base64,PHN2ZyBoZWlnaHQ9IjE2IiB3aWR0aD0iOCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJtMCAwIDggOC04IDh6IiBmaWxsPSIjNjY2Ii8+PC9zdmc+';
 const tpl = document.createElement('template');
 tpl.innerHTML = `
 <style>
 :host{display:block;width:100%;max-width:100%;font-family:Consolas,Menlo,Courier,monospace;font-size:14px;padding:8px;overflow-x:auto;box-sizing:border-box;position:relative}
 :host([boxed]){border:1px solid #ddd;border-radius:4px;padding:16px;transition:box-shadow 0.2s ease}
 :host([boxed]:hover){box-shadow:0 2px 8px rgba(0,0,0,0.1)}
+#root:has(+.align-left){margin-top:16px}
 .jv-copy{cursor:pointer;font-size:12px;background:#eee;padding:4px 8px;border-radius:3px;opacity:0;transition:opacity 0.2s ease}
 :host(:hover) .jv-copy{opacity:1}
 slot[name="copy-button"]{position:absolute;top:8px;right:8px;z-index:10;opacity:0;transition:opacity 0.2s ease;display:block !important}
@@ -28,7 +30,8 @@ slot[name="copy-button"][hidden]{display:none !important}
 slot[name="copy-button"].align-left{left:8px;right:auto}
 slot[name="copy-button"].align-right{right:8px;left:auto}
 :host(:hover) slot[name="copy-button"]{opacity:1}
-.jv-toggle{cursor:pointer;margin-right:4px;color:#49b3ff;user-select:none}
+.jv-toggle{background-image:url("${togglerSvg}");background-repeat:no-repeat;background-size:contain;background-position:center center;cursor:pointer;width:10px;height:10px;margin-right:2px;display:inline-block;transition:rotate .1s;}
+.jv-toggle.open{rotate:90deg}
 .jv-key{color:#111}
 .jv-string{color:#42b983}
 .jv-number{color:#fc1e70}
@@ -37,13 +40,10 @@ slot[name="copy-button"].align-right{right:8px;left:auto}
 .jv-function{color:#067bca}
 .jv-regexp{color:#fc1e70}
 .jv-list{margin-left:16px}
-.jv-node:not(:has(.jv-toggle)) .jv-list {
-  margin-left: 28px;
-}
-.jv-list > div:not(:has(.jv-toggle)) .jv-key {
+.jv-item:not(:has(.jv-toggle)) .jv-key {
   margin-left: 12px;
 }
-.jv-list > div:not(:last-child):after {
+.jv-item:not(:last-child):after {
   content: ',';
 }
 .jv-node>.jv-ellipsis{display:none;}
@@ -74,8 +74,8 @@ slot[name="copy-button"].align-right{right:8px;left:auto}
 }
 </style>
 <div id="root" part="root"></div>
-<slot name="copy-button" part="copy-button">
-  <span class="jv-copy">Copy</span>
+<slot name="copy-button" part="copy-button" hidden>
+  <span class="jv-copy"></span>
 </slot>
 `;
 
@@ -129,9 +129,6 @@ export class JsonViewerElement extends HTMLElement {
   private get sort() {
     return this.hasAttribute('sort');
   }
-  private get boxed() {
-    return this.hasAttribute('boxed');
-  }
   private get theme() {
     return this.getAttribute('theme') || 'light';
   }
@@ -141,11 +138,15 @@ export class JsonViewerElement extends HTMLElement {
   private get copyable(): CopyableOptions | false {
     if (!this.hasAttribute('copyable')) return false;
     const attr = this.getAttribute('copyable');
-    if (attr === '' || attr === null) return { copyText: 'Copy', copiedText: 'Copied', timeout: 2000, align: 'right' };
+    const defaultCopyableOptions: CopyableOptions = { copyText: 'Copy', copiedText: 'Copied', timeout: 2000, align: 'right' };
+    if (attr === '' || attr === null) return defaultCopyableOptions;
     try {
-      return JSON.parse(attr);
+      return {
+        ...defaultCopyableOptions,
+        ...JSON.parse(attr),
+      };
     } catch {
-      return { copyText: 'Copy', copiedText: 'Copied', timeout: 2000, align: 'right' };
+      return defaultCopyableOptions;
     }
   }
 
@@ -184,71 +185,47 @@ export class JsonViewerElement extends HTMLElement {
     this.container.appendChild(this.build(this._value, 0));
 
     const copyableOptions = this.copyable;
-    const copySlot = this.root.querySelector('slot[name="copy-button"]') as HTMLSlotElement;
-    const customCopyButton = copySlot.assignedElements()[0] as HTMLElement;
-    const defaultCopyBtn = this.root.querySelector('.jv-copy') as HTMLElement;
 
     if (copyableOptions) {
-      // 显示复制按钮容器并设置对齐
       const align = copyableOptions.align || 'right';
+      const copySlot = this.root.querySelector('slot[name="copy-button"]') as HTMLSlotElement;
+      const customCopyButton = copySlot.assignedElements()[0] as HTMLElement;
+      const defaultCopyBtn = this.root.querySelector('.jv-copy') as HTMLElement;
+
       copySlot.hidden = false;
       copySlot.className = `align-${align}`;
 
-      if (customCopyButton) {
-        // 使用自定义复制按钮
-        // 为自定义按钮设置数据和事件
-        customCopyButton.dataset.value = JSON.stringify(this._value, null, 2);
-        customCopyButton.dataset.copyableOptions = JSON.stringify(copyableOptions);
-
-        // 根据自定义按钮的 copyable 属性判断是否添加默认复制事件
-        const shouldAddCopyEvent = customCopyButton.getAttribute('copyable') !== 'false';
-
-        if (shouldAddCopyEvent && !customCopyButton.onclick) {
-          customCopyButton.onclick = () => {
-            const textToCopy = customCopyButton.dataset.value!;
-            this.copyText(textToCopy).then(() => {
-              // 触发自定义事件，允许外部处理成功状态
-              customCopyButton.dispatchEvent(new CustomEvent('copy-success', {
-                detail: { text: textToCopy, options: copyableOptions }
-              }));
-            }).catch(() => {
-              customCopyButton.dispatchEvent(new CustomEvent('copy-error', {
-                detail: { text: textToCopy, options: copyableOptions }
-              }));
-            });
-          };
-        }
-      } else {
-        // 使用默认复制按钮（slot 的默认内容）
-        defaultCopyBtn.textContent = copyableOptions.copyText || 'Copy';
-        defaultCopyBtn.className = 'jv-copy';
-
+      if (!customCopyButton) {
         let copyTimeout: number;
-        defaultCopyBtn.onclick = () => {
+        defaultCopyBtn.textContent = copyableOptions.copyText;
+
+        defaultCopyBtn.addEventListener('click', () => {
           const textToCopy = JSON.stringify(this._value, null, 2);
           this.copyText(textToCopy).then(() => {
-            const originalText = defaultCopyBtn.textContent;
-            defaultCopyBtn.textContent = copyableOptions.copiedText || 'Copied';
+            defaultCopyBtn.textContent = copyableOptions.copiedText;
 
-            clearTimeout(copyTimeout);
             copyTimeout = window.setTimeout(() => {
-              defaultCopyBtn.textContent = originalText;
-            }, copyableOptions.timeout || 2000);
+              defaultCopyBtn.textContent = copyableOptions.copyText;
+              clearTimeout(copyTimeout);
+            }, copyableOptions.timeout);
+
+            defaultCopyBtn.dispatchEvent(new CustomEvent('copy-success', {
+              detail: { text: textToCopy, options: copyableOptions }
+            }));
           }).catch(() => {
             console.warn('Failed to copy text to clipboard');
+
+            defaultCopyBtn.dispatchEvent(new CustomEvent('copy-error', {
+              detail: { text: textToCopy, options: copyableOptions }
+            }));
           });
-        };
+        });
       }
-    } else {
-      // 隐藏复制按钮容器
-      copySlot.hidden = true;
-      copySlot.className = '';
     }
   }
 
   /* ---- 递归建树 ---- */
   private build(data: any, depth: number): Node {
-    /* 原始值 */
     if (data === null) return this.leaf('null', 'jv-null');
     if (typeof data === 'boolean') return this.leaf(String(data), 'jv-boolean');
     if (typeof data === 'number') return this.leaf(String(data), 'jv-number');
@@ -272,13 +249,14 @@ export class JsonViewerElement extends HTMLElement {
     for (const k of keys) {
       const item = document.createElement('div');
       const childNode = this.build(data[k], depth + 1);
+      item.className = 'jv-item';
 
       // 如果子节点是对象或数组，将 toggle 按钮移到前面
       if (childNode instanceof Element && childNode.classList.contains('jv-node')) {
         const childToggle = childNode.querySelector('.jv-toggle');
         if (childToggle) {
-          childToggle.remove(); // 从原位置移除
-          item.append(childToggle); // 添加到新位置
+          childToggle.remove();
+          item.append(childToggle);
         }
       }
 
@@ -297,24 +275,26 @@ export class JsonViewerElement extends HTMLElement {
     const ellipsis = document.createElement('span');
     ellipsis.className = 'jv-ellipsis';
     ellipsis.setAttribute('part', 'ellipsis');
-    ellipsis.textContent = `...${keys.length}`
-    ellipsis.onclick = () => {
+    ellipsis.textContent = `...${keys.length}`;
+    ellipsis.addEventListener('click', () => {
       node.classList.remove('collapsed');
-      toggle.textContent = '▾';
-    };
-
-    if (depth >= this.expandDepth) node.classList.add('collapsed');
-    if (!keys.length) node.classList.add('empty')
+    });
 
     /* 折叠按钮 */
     const toggle = document.createElement('span');
     toggle.className = 'jv-toggle';
     toggle.setAttribute('part', 'toggle');
-    toggle.textContent = node.classList.contains('collapsed') ? '▸' : '▾';
-    toggle.onclick = () => {
+    // 如果节点不是折叠状态，则按钮为 open 状态
+    if (!node.classList.contains('collapsed')) {
+      toggle.classList.add('open');
+    }
+    toggle.addEventListener('click', () => {
       node.classList.toggle('collapsed');
-      toggle.textContent = node.classList.contains('collapsed') ? '▸' : '▾';
-    };
+      toggle.classList.toggle('open');
+    });
+
+    if (depth >= this.expandDepth) node.classList.add('collapsed');
+    if (!keys.length) node.classList.add('empty');
 
     /* 组装 DOM */
     node.append(toggle, isArr ? '[' : '{', ellipsis, list, isArr ? ']' : '}');
