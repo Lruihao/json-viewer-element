@@ -75,6 +75,67 @@
         <p>专门展示数组类型数据的渲染效果</p>
         <json-viewer id="array" boxed copyable></json-viewer>
       </div> -->
+
+      <div class="demo">
+        <h3>🎨 自定义复制按钮</h3>
+        <p>使用 slot 自定义复制按钮样式和行为</p>
+        <json-viewer id="custom-copy" boxed copyable='{"align":"left"}' expand-depth="2">
+          <button slot="copy-button" class="custom-copy-btn" style="
+            background: linear-gradient(45deg, #007acc, #00d4ff);
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            transition: transform 0.2s ease;
+          " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+            <span>📋</span>
+            <span>复制 JSON</span>
+          </button>
+        </json-viewer>
+      </div>
+
+      <div class="demo">
+        <h3>🔧 自定义复制行为</h3>
+        <p>自定义复制成功和失败的处理逻辑</p>
+        <json-viewer id="custom-behavior" boxed copyable expand-depth="1">
+          <button slot="copy-button" id="smart-copy-btn" style="
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            position: relative;
+          ">
+            智能复制
+          </button>
+        </json-viewer>
+        <div id="copy-status" style="margin-top: 10px; padding: 8px; border-radius: 4px; display: none;"></div>
+      </div>
+
+            <div class="demo">
+        <h3>🎛️ 自定义按钮行为控制</h3>
+        <p>通过 copyable 属性控制是否启用默认复制行为</p>
+        <json-viewer id="custom-control" boxed copyable expand-depth="1">
+          <button slot="copy-button" copyable="false" style="
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+          " onclick="alert('这是自定义点击事件，不会复制JSON数据')">
+            自定义行为
+          </button>
+        </json-viewer>
+      </div>
     </div>
 
     <script>
@@ -124,6 +185,54 @@
         document.getElementById('simple').value = data
         document.getElementById('deep').value = data
         // document.getElementById('array').value = arrayData
+
+        // 自定义复制按钮测试数据
+        document.getElementById('custom-copy').value = {
+          theme: 'custom',
+          features: ['slot support', 'custom events', 'flexible styling'],
+          version: '1.0.0'
+        };
+        
+        document.getElementById('custom-behavior').value = {
+          message: 'Test custom copy behavior',
+          timestamp: new Date().toISOString()
+        };
+        
+        document.getElementById('custom-control').value = {
+          message: 'Custom button behavior',
+          description: 'This button will not copy JSON data'
+        };
+        
+        // 自定义复制行为事件处理
+        const smartCopyBtn = document.getElementById('smart-copy-btn');
+        const copyStatus = document.getElementById('copy-status');
+        
+        smartCopyBtn.addEventListener('copy-success', (e) => {
+          copyStatus.style.display = 'block';
+          copyStatus.style.background = '#d4edda';
+          copyStatus.style.color = '#155724';
+          copyStatus.style.border = '1px solid #c3e6cb';
+          copyStatus.innerHTML = `
+            ✅ 复制成功！<br>
+            <small>已复制 ${e.detail.text.split('\n').length} 行数据到剪贴板</small>
+          `;
+          
+          setTimeout(() => {
+            copyStatus.style.display = 'none';
+          }, 3000);
+        });
+        
+        smartCopyBtn.addEventListener('copy-error', (e) => {
+          copyStatus.style.display = 'block';
+          copyStatus.style.background = '#f8d7da';
+          copyStatus.style.color = '#721c24';
+          copyStatus.style.border = '1px solid #f5c6cb';
+          copyStatus.innerHTML = '❌ 复制失败，请重试';
+          
+          setTimeout(() => {
+            copyStatus.style.display = 'none';
+          }, 3000);
+        });
 
         console.log('JSON Viewer Element 演示页面已加载完成')
       })
