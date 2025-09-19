@@ -29,6 +29,7 @@ tpl.innerHTML = `
   --jv-number-color: #fc1e70;
   --jv-boolean-color: #fc1e70;
   --jv-null-color: #e08331;
+  --jv-undefined-color: #b0b0b0;
   --jv-function-color: #067bca;
   --jv-regexp-color: #fc1e70;
   --jv-copy-bg: #eee;
@@ -42,14 +43,15 @@ tpl.innerHTML = `
 :host([theme="dark"]) {
   --jv-bg-color: #23272f;
   --jv-border-color: #2c313a;
-  --jv-text-color: #fff;
-  --jv-key-color: #fff;
-  --jv-string-color: #42b983;
-  --jv-number-color: #fc1e70;
-  --jv-boolean-color: #fc1e70;
-  --jv-null-color: #e08331;
-  --jv-function-color: #067bca;
-  --jv-regexp-color: #fc1e70;
+  --jv-text-color: #d4d4d4;
+  --jv-key-color: #79c0ff;
+  --jv-string-color: #a5d6a7;
+  --jv-number-color: #e2b86b;
+  --jv-boolean-color: #ff7b72;
+  --jv-null-color: #ffab70;
+  --jv-undefined-color: #d2a8ff;
+  --jv-function-color: #c678dd;
+  --jv-regexp-color: #56b6c2;
   --jv-copy-bg: #3a3f4b;
   --jv-copy-text: #fff;
   --jv-ellipsis-color: #6e7681;
@@ -148,6 +150,9 @@ slot[name="copy-button"].align-right {
 }
 .jv-null {
   color: var(--jv-null-color);
+}
+.jv-undefined {
+  color: var(--jv-undefined-color);
 }
 .jv-function {
   color: var(--jv-function-color);
@@ -325,13 +330,14 @@ export class JsonViewerElement extends HTMLElement {
               clearTimeout(copyTimeout);
             }, copyableOptions.timeout);
 
-            defaultCopyBtn.dispatchEvent(new CustomEvent('copy-success', {
+            // fixme)) 这里会有触发多次的 BUG
+            this.dispatchEvent(new CustomEvent('copy-success', {
               detail: { text: textToCopy, options: copyableOptions }
             }));
           }).catch(() => {
             console.warn('Failed to copy text to clipboard');
 
-            defaultCopyBtn.dispatchEvent(new CustomEvent('copy-error', {
+            this.dispatchEvent(new CustomEvent('copy-error', {
               detail: { text: textToCopy, options: copyableOptions }
             }));
           });
@@ -343,6 +349,7 @@ export class JsonViewerElement extends HTMLElement {
   /* ---- 递归建树 ---- */
   private build(data: any, depth: number): Node {
     if (data === null) return this.leaf('null', 'jv-null');
+    if (data === undefined) return this.leaf('undefined', 'jv-undefined');
     if (typeof data === 'boolean') return this.leaf(String(data), 'jv-boolean');
     if (typeof data === 'number') return this.leaf(String(data), 'jv-number');
     if (typeof data === 'string') return this.leaf(`"${data}"`, 'jv-string');
@@ -387,15 +394,6 @@ export class JsonViewerElement extends HTMLElement {
       list.append(item);
     }
 
-    /* 省略号 */
-    const ellipsis = document.createElement('span');
-    ellipsis.className = 'jv-ellipsis';
-    ellipsis.setAttribute('part', 'ellipsis');
-    ellipsis.textContent = `...${keys.length}`;
-    ellipsis.addEventListener('click', () => {
-      node.classList.remove('collapsed');
-    });
-
     /* 折叠按钮 */
     const toggle = document.createElement('span');
     toggle.className = 'jv-toggle';
@@ -407,9 +405,29 @@ export class JsonViewerElement extends HTMLElement {
     toggle.addEventListener('click', () => {
       node.classList.toggle('collapsed');
       toggle.classList.toggle('open');
+      this.dispatchEvent(new CustomEvent('toggle', {
+        detail: {
+          node,
+          data,
+          isCollapsed: node.classList.contains('collapsed'),
+        }
+      }));
     });
 
-    if (depth >= this.expandDepth) node.classList.add('collapsed');
+    /* 省略号 */
+    const ellipsis = document.createElement('span');
+    ellipsis.className = 'jv-ellipsis';
+    ellipsis.setAttribute('part', 'ellipsis');
+    ellipsis.textContent = `...${keys.length}`;
+    ellipsis.addEventListener('click', () => {
+      node.classList.remove('collapsed');
+      toggle.classList.add('open');
+    });
+
+    if (depth >= this.expandDepth) {
+      node.classList.add('collapsed');
+      toggle.classList.remove('open');
+    }
     if (!keys.length) node.classList.add('empty');
 
     /* 组装 DOM */

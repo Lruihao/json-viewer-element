@@ -4,8 +4,8 @@
     <meta charset="utf-8" />
     <title>&lt;json-viewer&gt; Element</title>
     <script type="module" defer>
-      import { JsonViewerElement } from '../dist/json-viewer-element.es.js'
-      // import { JsonViewerElement } from '../src/json-viewer-element.ts'
+      // import { JsonViewerElement } from '../dist/json-viewer-element.es.js'
+      import { JsonViewerElement } from '../src/json-viewer-element.ts'
     </script>
     <style>
       body {
@@ -108,7 +108,7 @@
         <h3>🔧 自定义复制行为</h3>
         <p>自定义复制成功和失败的处理逻辑</p>
         <json-viewer id="custom-behavior" boxed copyable expand-depth="1">
-          <button slot="copy-button" id="smart-copy-btn" style="
+          <button slot="copy-button" id="custom-behavior-btn" style="
             background: #28a745;
             color: white;
             border: none;
@@ -118,13 +118,13 @@
             font-size: 12px;
             position: relative;
           ">
-            智能复制
+            复制
           </button>
         </json-viewer>
         <div id="copy-status" style="margin-top: 10px; padding: 8px; border-radius: 4px; display: none;"></div>
       </div>
 
-            <div class="demo">
+      <div class="demo">
         <h3>🎛️ 自定义按钮行为控制</h3>
         <p>使用自定义 slot 按钮，完全覆盖默认复制行为，实现自定义功能</p>
         <json-viewer id="custom-control" boxed copyable expand-depth="1">
@@ -146,19 +146,7 @@
       <div class="demo">
         <h3>🔄 折叠展开控制</h3>
         <p>展示折叠按钮功能和省略号点击展开</p>
-        <json-viewer id="toggle-demo" boxed copyable expand-depth="0">
-          <button slot="copy-button" style="
-            background: #17a2b8;
-            color: white;
-            border: none;
-            padding: 6px 12px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 12px;
-          ">
-            📋 复制
-          </button>
-        </json-viewer>
+        <json-viewer id="toggle-demo" boxed copyable expand-depth="0"></json-viewer>
       </div>
 
       <div class="demo">
@@ -187,20 +175,7 @@
           <button onclick="changeData()" style="margin-right: 10px; padding: 5px 10px;">更换数据</button>
           <button onclick="toggleSort()" style="padding: 5px 10px;">切换排序</button>
         </div>
-        <json-viewer id="interactive-demo" boxed copyable sort expand-depth="1">
-          <button slot="copy-button" style="
-            background: #28a745;
-            color: white;
-            border: none;
-            padding: 6px 12px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 12px;
-            animation: pulse 2s infinite;
-          ">
-            🚀 智能复制
-          </button>
-        </json-viewer>
+        <json-viewer id="interactive-demo" boxed copyable sort expand-depth="1"></json-viewer>
         <div id="interaction-log" style="
           margin-top: 10px;
           padding: 10px;
@@ -213,29 +188,6 @@
           overflow-y: auto;
         ">
           <div><strong>事件日志：</strong></div>
-        </div>
-      </div>
-    </div>
-
-    <div class="demo">
-      <h3>📊 功能对比表</h3>
-      <p>不同配置下的功能对比展示</p>
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
-        <div>
-          <h4>最小配置</h4>
-          <json-viewer id="minimal"></json-viewer>
-        </div>
-        <div>
-          <h4>基础配置</h4>
-          <json-viewer id="basic-config" boxed copyable></json-viewer>
-        </div>
-        <div>
-          <h4>完整配置</h4>
-          <json-viewer id="full-config" boxed copyable sort expand-depth="2">
-            <button slot="copy-button" style="background: #007acc; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer; font-size: 11px;">
-              📋 复制
-            </button>
-          </json-viewer>
         </div>
       </div>
     </div>
@@ -281,121 +233,112 @@
       ]
 
       document.addEventListener('DOMContentLoaded', () => {
-        // 为所有组件设置数据
-        document.getElementById('basic').value = data
-        document.getElementById('copy-custom').value = data
-        document.getElementById('simple').value = data
-        document.getElementById('deep').value = data
-        document.getElementById('array').value = arrayData
-
-        // 自定义复制按钮测试数据
-        document.getElementById('custom-copy').value = {
-          theme: 'custom',
-          features: ['slot support', 'custom events', 'flexible styling'],
-          version: '1.0.0'
-        };
-        
-        document.getElementById('custom-behavior').value = {
-          message: 'Test custom copy behavior',
-          timestamp: new Date().toISOString()
-        };
-        
-        document.getElementById('custom-control').value = {
-          message: 'Custom button behavior',
-          description: 'This button will copy JSON data and show alert'
-        };
-
-        // 折叠展开演示数据
-        document.getElementById('toggle-demo').value = {
-          level1: {
-            level2: {
-              level3: {
-                deepData: 'This is deeply nested',
-                moreData: [1, 2, 3, 4, 5]
-              },
-              siblingData: 'At level 2'
-            },
-            anotherBranch: {
-              info: 'Another branch at level 2',
-              data: { nested: true }
-            }
+        // 统一赋值，先收集所有 id
+        const viewerIds = [
+          'basic', 'copy-custom', 'simple', 'deep', 'array',
+          'custom-copy', 'custom-behavior', 'custom-control',
+          'toggle-demo', 'parse-demo', 'types-demo', 'empty-demo'
+        ];
+        const viewerValues = {
+          basic: data,
+          'copy-custom': data,
+          simple: data,
+          deep: data,
+          array: arrayData,
+          'custom-copy': {
+            theme: 'custom',
+            features: ['slot support', 'custom events', 'flexible styling'],
+            version: '1.0.0'
           },
-          topLevel: ['item1', 'item2', 'item3']
-        };
-
-        // 字符串解析演示
-        document.getElementById('parse-demo').value = '{"stringified": "json", "will": "not", "be": "parsed"}';
-
-        // 各种数据类型演示
-        document.getElementById('types-demo').value = {
-          string: 'Hello World',
-          number: 42,
-          float: 3.14159,
-          boolean_true: true,
-          boolean_false: false,
-          null_value: null,
-          // undefined_value: undefined,
-          date: new Date('2024-01-01'),
-          function: function() { return 'test'; },
-          arrow_function: () => 'arrow',
-          regexp: /pattern/gi,
-          bigint: BigInt(123456789),
-          symbol: Symbol('test'),
-          array: [1, 'two', true, null],
-          nested_object: {
-            deep: {
-              deeper: {
-                value: 'found me!'
+          'custom-behavior': {
+            message: 'Test custom copy behavior',
+            timestamp: new Date().toISOString()
+          },
+          'custom-control': {
+            message: 'Custom button behavior',
+            description: 'This button will copy JSON data and show alert'
+          },
+          'toggle-demo': {
+            level1: {
+              level2: {
+                level3: {
+                  deepData: 'This is deeply nested',
+                  moreData: [1, 2, 3, 4, 5]
+                },
+                siblingData: 'At level 2'
+              },
+              anotherBranch: {
+                info: 'Another branch at level 2',
+                data: { nested: true }
+              }
+            },
+            topLevel: ['item1', 'item2', 'item3']
+          },
+          'parse-demo': '{"stringified": "json", "will": "not", "be": "parsed"}',
+          'types-demo': {
+            string: 'Hello World',
+            number: 42,
+            float: 3.14159,
+            boolean_true: true,
+            boolean_false: false,
+            null_value: null,
+            undefined_value: undefined,
+            date: new Date('2024-01-01'),
+            function: function() { return 'test'; },
+            arrow_function: () => 'arrow',
+            regexp: /pattern/gi,
+            // bigint: BigInt(123456789),
+            // symbol: Symbol('test'),
+            array: [1, 'two', true, null],
+            nested_object: {
+              deep: {
+                deeper: {
+                  value: 'found me!'
+                }
               }
             }
+          },
+          'empty-demo': {
+            emptyObject: {},
+            emptyArray: [],
+            nullValue: null,
+            undefinedValue: undefined,
+            emptyString: '',
+            zeroNumber: 0,
+            falseBoolean: false,
+            nested: {
+              stillEmpty: {},
+              emptyArrayToo: []
+            }
           }
         };
 
-        // 空数据处理演示
-        document.getElementById('empty-demo').value = {
-          emptyObject: {},
-          emptyArray: [],
-          nullValue: null,
-          // undefinedValue: undefined,
-          emptyString: '',
-          zeroNumber: 0,
-          falseBoolean: false,
-          nested: {
-            stillEmpty: {},
-            emptyArrayToo: []
-          }
-        };
-        
-        // 自定义复制行为事件处理
-        const smartCopyBtn = document.getElementById('smart-copy-btn');
-        const copyStatus = document.getElementById('copy-status');
-        
-        smartCopyBtn.addEventListener('copy-success', (e) => {
-          copyStatus.style.display = 'block';
-          copyStatus.style.background = '#d4edda';
-          copyStatus.style.color = '#155724';
-          copyStatus.style.border = '1px solid #c3e6cb';
-          copyStatus.innerHTML = `
-            ✅ 复制成功！<br>
-            <small>已复制 ${e.detail.text.split('\n').length} 行数据到剪贴板</small>
-          `;
-          
-          setTimeout(() => {
-            copyStatus.style.display = 'none';
-          }, 3000);
+        viewerIds.forEach(id => {
+          const el = document.getElementById(id);
+          if (el) el.value = viewerValues[id];
         });
         
-        smartCopyBtn.addEventListener('copy-error', (e) => {
-          copyStatus.style.display = 'block';
-          copyStatus.style.background = '#f8d7da';
-          copyStatus.style.color = '#721c24';
-          copyStatus.style.border = '1px solid #f5c6cb';
-          copyStatus.innerHTML = '❌ 复制失败，请重试';
-          
-          setTimeout(() => {
-            copyStatus.style.display = 'none';
-          }, 3000);
-        });
+        // 自定义复制按钮逻辑（custom-copy）
+        const customCopyBtn = document.querySelector('#custom-copy [slot="copy-button"]');
+        const customCopyViewer = document.getElementById('custom-copy');
+        if (customCopyBtn && customCopyViewer) {
+          customCopyBtn.addEventListener('click', () => {
+            const text = JSON.stringify(customCopyViewer.value, null, 2);
+            navigator.clipboard.writeText(text).then(() => {
+              customCopyBtn.textContent = '已复制';
+              customCopyBtn.dispatchEvent(new CustomEvent('copy-success', {
+                detail: { text }
+              }));
+              setTimeout(() => {
+                customCopyBtn.textContent = '复制 JSON';
+              }, 2000);
+            }).catch(() => {
+              customCopyBtn.dispatchEvent(new CustomEvent('copy-error', {
+                detail: { text }
+              }));
+            });
+          });
+        }
 
         // 交互式功能测试数据
         document.getElementById('interactive-demo').value = {
@@ -416,11 +359,22 @@
           }
         };
 
-        // 对比表数据
-        const simpleData = { name: 'Simple', version: '1.0' };
-        document.getElementById('minimal').value = simpleData;
-        document.getElementById('basic-config').value = simpleData;
-        document.getElementById('full-config').value = simpleData;
+        // 自定义复制行为（custom-behavior）
+        const customBehaviorBtn = document.getElementById('custom-behavior-btn');
+        const customBehaviorViewer = document.getElementById('custom-behavior');
+        const statusDiv = document.getElementById('copy-status');
+        if (customBehaviorBtn && customBehaviorViewer) {
+          customBehaviorBtn.addEventListener('click', () => {
+            statusDiv.textContent = `复制成功：${new Date().toLocaleTimeString()}`;
+            statusDiv.style.display = 'block';
+            const text = JSON.stringify(customBehaviorViewer.value, null, 2);
+            navigator.clipboard.writeText(text).then(() => {
+              addLog(`复制成功，已复制 ${text.split('\n').length} 行数据到剪贴板`);
+            }).catch(() => {
+              addLog('复制失败，请重试');
+            });
+          });
+        }
 
         // 事件监听
         const interactiveViewer = document.getElementById('interactive-demo');
@@ -434,13 +388,14 @@
           logContainer.scrollTop = logContainer.scrollHeight;
         }
 
-        // 监听toggle事件
+        // 监听 toggle 事件
         interactiveViewer.addEventListener('toggle', (e) => {
           addLog(`节点${e.detail.isCollapsed ? '折叠' : '展开'}`);
         });
 
         // 监听复制事件
         interactiveViewer.addEventListener('copy-success', (e) => {
+          console.log('copy-success event', e);
           addLog(`复制成功 - ${e.detail.text.length} 字符`);
         });
 
