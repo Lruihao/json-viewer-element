@@ -11,7 +11,7 @@ export interface JsonViewerElementProps {
   copyable?: boolean | CopyableOptions;
   sort?: boolean;
   boxed?: boolean;
-  theme?: string;
+  theme?: 'light' | 'dark';
   parse?: boolean;
 }
 
@@ -19,58 +19,174 @@ const togglerSvg = 'data:image/svg+xml;charset=utf-8;base64,PHN2ZyBoZWlnaHQ9IjE2
 const tpl = document.createElement('template');
 tpl.innerHTML = `
 <style>
-:host{display:block;width:100%;max-width:100%;font-family:Consolas,Menlo,Courier,monospace;font-size:14px;padding:8px;overflow-x:auto;box-sizing:border-box;position:relative}
-:host([boxed]){border:1px solid #ddd;border-radius:4px;padding:16px;transition:box-shadow 0.2s ease}
-:host([boxed]:hover){box-shadow:0 2px 8px rgba(0,0,0,0.1)}
-#root:has(+.align-left){margin-top:16px}
-.jv-copy{cursor:pointer;font-size:12px;background:#eee;padding:4px 8px;border-radius:3px;opacity:0;transition:opacity 0.2s ease}
-:host(:hover) .jv-copy{opacity:1}
-slot[name="copy-button"]{position:absolute;top:8px;right:8px;z-index:10;opacity:0;transition:opacity 0.2s ease;display:block !important}
-slot[name="copy-button"][hidden]{display:none !important}
-slot[name="copy-button"].align-left{left:8px;right:auto}
-slot[name="copy-button"].align-right{right:8px;left:auto}
-:host(:hover) slot[name="copy-button"]{opacity:1}
-.jv-toggle{background-image:url("${togglerSvg}");background-repeat:no-repeat;background-size:contain;background-position:center center;cursor:pointer;width:10px;height:10px;margin-right:2px;display:inline-block;transition:rotate .1s;}
-.jv-toggle.open{rotate:90deg}
-.jv-key{color:#111}
-.jv-string{color:#42b983}
-.jv-number{color:#fc1e70}
-.jv-boolean{color:#fc1e70}
-.jv-null{color:#e08331}
-.jv-function{color:#067bca}
-.jv-regexp{color:#fc1e70}
-.jv-list{margin-left:16px}
+/* Light Theme (default) */
+:host {
+  --jv-bg-color: #ffffff;
+  --jv-border-color: #ddd;
+  --jv-text-color: #111;
+  --jv-key-color: #111;
+  --jv-string-color: #42b983;
+  --jv-number-color: #fc1e70;
+  --jv-boolean-color: #fc1e70;
+  --jv-null-color: #e08331;
+  --jv-function-color: #067bca;
+  --jv-regexp-color: #fc1e70;
+  --jv-copy-bg: #eee;
+  --jv-copy-text: #333;
+  --jv-ellipsis-color: #999999;
+  --jv-ellipsis-bg: #eeeeee;
+  --jv-hover-shadow: rgba(0,0,0,0.1);
+}
+
+/* Dark Theme */
+:host([theme="dark"]) {
+  --jv-bg-color: #23272f;
+  --jv-border-color: #2c313a;
+  --jv-text-color: #fff;
+  --jv-key-color: #fff;
+  --jv-string-color: #42b983;
+  --jv-number-color: #fc1e70;
+  --jv-boolean-color: #fc1e70;
+  --jv-null-color: #e08331;
+  --jv-function-color: #067bca;
+  --jv-regexp-color: #fc1e70;
+  --jv-copy-bg: #3a3f4b;
+  --jv-copy-text: #fff;
+  --jv-ellipsis-color: #6e7681;
+  --jv-ellipsis-bg: #2c313a;
+  --jv-hover-shadow: rgba(0,0,0,0.4);
+}
+
+:host {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  font-family: Consolas, Menlo, Courier, monospace;
+  font-size: 14px;
+  padding: 8px;
+  overflow-x: auto;
+  box-sizing: border-box;
+  position: relative;
+  background-color: var(--jv-bg-color);
+  color: var(--jv-text-color);
+}
+
+:host([boxed]) {
+  border: 1px solid var(--jv-border-color);
+  border-radius: 4px;
+  padding: 16px;
+  transition: box-shadow 0.2s ease;
+}
+:host([boxed]:hover) {
+  box-shadow: 0 2px 8px var(--jv-hover-shadow);
+}
+#root:has(+.align-left) {
+  margin-top: 16px;
+}
+.jv-copy {
+  cursor: pointer;
+  font-size: 12px;
+  background: var(--jv-copy-bg);
+  color: var(--jv-copy-text);
+  padding: 4px 8px;
+  border-radius: 3px;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+:host(:hover) .jv-copy {
+  opacity: 1;
+}
+slot[name="copy-button"] {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 10;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  display: block !important;
+}
+slot[name="copy-button"][hidden] {
+  display: none !important;
+}
+slot[name="copy-button"].align-left {
+  left: 8px;
+  right: auto;
+}
+slot[name="copy-button"].align-right {
+  right: 8px;
+  left: auto;
+}
+:host(:hover) slot[name="copy-button"] {
+  opacity: 1;
+}
+.jv-toggle {
+  background-image: url("${togglerSvg}");
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center center;
+  cursor: pointer;
+  width: 10px;
+  height: 10px;
+  margin-right: 2px;
+  display: inline-block;
+  transition: rotate .1s;
+}
+.jv-toggle.open {
+  rotate: 90deg;
+}
+.jv-key {
+  color: var(--jv-key-color);
+}
+.jv-string {
+  color: var(--jv-string-color);
+}
+.jv-number {
+  color: var(--jv-number-color);
+}
+.jv-boolean {
+  color: var(--jv-boolean-color);
+}
+.jv-null {
+  color: var(--jv-null-color);
+}
+.jv-function {
+  color: var(--jv-function-color);
+}
+.jv-regexp {
+  color: var(--jv-regexp-color);
+}
+.jv-list {
+  margin-left: 16px;
+}
 .jv-item:not(:has(.jv-toggle)) .jv-key {
   margin-left: 12px;
 }
 .jv-item:not(:last-child):after {
   content: ',';
 }
-.jv-node>.jv-ellipsis{display:none;}
-.jv-node.empty {
-  >.jv-list {
-    display: inline-block;
-    margin-inline: 4px;
-  }
+.jv-node > .jv-ellipsis {
+  display: none;
 }
-.jv-node.collapsed {
-  >.jv-list,
-  &.empty>.jv-ellipsis {
-    display: none;
-  }
-  >.jv-ellipsis {
-    color: #999999;
-    background-color: #eeeeee;
-    display: inline-block;
-    line-height: 0.9;
-    font-size: 0.85em;
-    vertical-align: 2px;
-    cursor: pointer;
-    user-select: none;
-    padding: 2px 4px;
-    margin: 0px 4px;
-    border-radius: 3px;
-  }
+.jv-node.empty > .jv-list {
+  display: inline-block;
+  margin-inline: 4px;
+}
+.jv-node.collapsed > .jv-list,
+.jv-node.collapsed.empty > .jv-ellipsis {
+  display: none;
+}
+.jv-node.collapsed > .jv-ellipsis {
+  color: var(--jv-ellipsis-color);
+  background-color: var(--jv-ellipsis-bg);
+  display: inline-block;
+  line-height: 0.9;
+  font-size: 0.85em;
+  vertical-align: 2px;
+  cursor: pointer;
+  user-select: none;
+  padding: 2px 4px;
+  margin: 0px 4px;
+  border-radius: 3px;
 }
 </style>
 <div id="root" part="root"></div>

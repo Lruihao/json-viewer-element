@@ -6,8 +6,7 @@
   "main": "dist/json-viewer-element.es.js",
   "types": "dist/json-viewer-element.d.ts",
   "files": [
-    "dist",
-    "src/themes"
+    "dist"
   ],
   "keywords": [
     "json-viewer",
@@ -31,6 +30,7 @@
     "build:dts": "tsc --emitDeclarationOnly --outDir dist"
   },
   "devDependencies": {
+    "terser": "^5.44.0",
     "typescript": "^5.5.3",
     "vite": "^5.3.4",
     "vite-plugin-dts": "^3.9.1"

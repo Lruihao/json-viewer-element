@@ -5,6 +5,7 @@
     <title>&lt;json-viewer&gt; Element</title>
     <script type="module" defer>
       import { JsonViewerElement } from '../dist/json-viewer-element.es.js'
+      // import { JsonViewerElement } from '../src/json-viewer-element.ts'
     </script>
     <style>
       body {
@@ -47,7 +48,7 @@
     <div class="demo">
       <h3>🎨 基础功能展示</h3>
       <p>包含所有核心功能：boxed 边框、copyable 复制、sort 排序、展开深度控制</p>
-      <json-viewer id="basic" boxed copyable sort expand-depth="2"></json-viewer>
+      <json-viewer id="basic" boxed copyable sort expand-depth="2" theme="dark"></json-viewer>
     </div>
 
     <div class="feature-list">

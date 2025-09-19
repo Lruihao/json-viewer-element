@@ -8,7 +8,18 @@ export default defineConfig({
       formats: ['es', 'umd'],
       name: 'JsonViewerElement',
       fileName: (format) => `json-viewer-element.${format}.js`
-    }
+    },
+    minify: 'terser',
+    terserOptions: {
+      format: {
+        comments: false,
+      },
+      compress: {
+        collapse_vars: true,
+        reduce_vars: true,
+        passes: 3,
+      }
+    },
   },
   plugins: [dts()],
 });
