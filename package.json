@@ -1,36 +1,39 @@
 {
   "name": "json-viewer-element",
-  "version": "1.0.0",
   "type": "module",
-  "packageManager": "pnpm@10.15.1",
+  "version": "1.0.0",
+  "packageManager": "pnpm@10.18.2",
   "description": "A custom element for viewing and interacting with JSON data.",
-  "main": "dist/json-viewer-element.es.js",
-  "types": "dist/json-viewer-element.d.ts",
-  "files": [
-    "dist"
-  ],
+  "author": "Lruihao (https://lruihao.cn)",
+  "license": "MIT",
+  "homepage": "https://github.com/Lruihao/json-viewer-element#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Lruihao/json-viewer-element.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Lruihao/json-viewer-element/issues"
+  },
   "keywords": [
     "json-viewer",
     "web-component",
     "custom-element"
   ],
-  "homepage": "https://github.com/Lruihao/json-viewer-element#readme",
-  "bugs": {
-    "url": "https://github.com/Lruihao/json-viewer-element/issues"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/Lruihao/json-viewer-element.git"
-  },
-  "license": "MIT",
-  "author": "Lruihao (https://lruihao.cn)",
+  "main": "dist/json-viewer-element.es.js",
+  "types": "dist/json-viewer-element.d.ts",
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "dev": "vite demo",
     "build": "vite build && npm run build:dts",
     "build:demo": "vite build demo --base /json-viewer-element",
-    "build:dts": "tsc --emitDeclarationOnly --outDir dist"
+    "build:dts": "tsc --emitDeclarationOnly --outDir dist",
+    "lint": "eslint ."
   },
   "devDependencies": {
+    "@antfu/eslint-config": "^5.4.1",
+    "eslint": "^9.36.0",
     "terser": "^5.44.0",
     "typescript": "^5.9.3",
     "vite": "^7.1.9",

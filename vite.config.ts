@@ -1,5 +1,5 @@
-import { defineConfig } from 'vite';
-import dts from 'vite-plugin-dts';
+import { defineConfig } from 'vite'
+import dts from 'vite-plugin-dts'
 
 export default defineConfig({
   build: {
@@ -7,7 +7,7 @@ export default defineConfig({
       entry: 'src/index.ts',
       formats: ['es', 'umd'],
       name: 'JsonViewerElement',
-      fileName: (format) => `json-viewer-element.${format}.js`
+      fileName: format => `json-viewer-element.${format}.js`,
     },
     minify: 'terser',
     terserOptions: {
@@ -18,8 +18,8 @@ export default defineConfig({
         collapse_vars: true,
         reduce_vars: true,
         passes: 3,
-      }
+      },
     },
   },
   plugins: [dts()],
-});
+})

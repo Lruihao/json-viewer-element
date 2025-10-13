@@ -27,7 +27,7 @@ npm install json-viewer-element
 #### 作为模块
 
 ```js
-import 'json-viewer-element';
+import 'json-viewer-element'
 ```
 
 #### UMD (CDN)

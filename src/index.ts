@@ -1,1 +1,1 @@
-export * from './json-viewer-element';
+export * from './json-viewer-element'
