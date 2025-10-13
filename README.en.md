@@ -1,4 +1,4 @@
-# json-viewer-element
+# &lt;json-viewer&gt; Element
 
 > 🌈 A lightweight, modern Web Component for JSON visualization and interaction.
 
@@ -38,6 +38,8 @@ import 'json-viewer-element'
 
 ### Basic Example
 
+Set value by script:
+
 ```html
 <json-viewer id="viewer" boxed copyable sort expand-depth="2" theme="dark"></json-viewer>
 <script>
@@ -45,30 +47,51 @@ import 'json-viewer-element'
 </script>
 ```
 
+Set value by attribute:
+
 ```html
 <json-viewer value='{"hello":"world","arr":[1,2,3]}' boxed copyable sort expand-depth="2" theme="dark"></json-viewer>
 ```
 
+> [!TIP]
+> When using with frameworks like Vue, you should pass value and copyable props as strings.
+
+```vue
+<template>
+  <json-viewer :value="JSON.stringify(json)" boxed copyable sort expand-depth="2" theme="dark"></json-viewer>
+</template>
+
+<script>
+export default {
+  data() {
+    return {
+      json: { hello: "world", arr: [1,2,3] },
+    }
+  },
+}
+</script>
+```
+
 ## Props
 
-| Prop         | Type                      | Default | Description                                                 |
-| :----------- | :------------------------ | :------ | :---------------------------------------------------------- |
-| value        | any                       |         | JSON data                                                   |
-| expand-depth | number                    | 1       | Initial expand depth                                        |
-| copyable     | boolean / CopyableOptions | false   | Enable copy button or custom copy button config (see below) |
-| sort         | boolean                   | false   | Whether to sort object keys                                 |
-| boxed        | boolean                   | false   | Whether to show border and padding                          |
-| theme        | 'light' / 'dark'          | 'light' | Theme                                                       |
-| parse        | boolean                   | true    | Whether to parse string value as JSON                       |
+| Prop         | Type                      | Default | Description                                                                 |
+| :----------- | :------------------------ | :------ | :-------------------------------------------------------------------------- |
+| value        | any                       |         | JSON data                                                                   |
+| expand-depth | number                    | 1       | Initial expand depth                                                        |
+| copyable     | boolean / CopyableOptions | false   | Enable copy button or custom copy button config (see below)                 |
+| sort         | boolean                   | false   | Whether to sort object keys                                                 |
+| boxed        | boolean                   | false   | Whether to show border and padding                                          |
+| theme        | 'light' / 'dark'          | 'light' | Theme                                                                       |
+| parse        | boolean                   | true    | Whether to parse string value as JSON                                       |
 
 ### CopyableOptions
 
-| Prop       | Type             | Default | Description                      |
-| :--------- | :--------------- | :------ | :------------------------------- |
-| copyText   | string           | Copy    | Text shown on the copy button    |
-| copiedText | string           | Copied  | Text shown after successful copy |
-| timeout    | number           | 2000    | How long to show copiedText (ms) |
-| align      | 'left' / 'right' | right   | Copy button alignment            |
+| Prop        | Type              | Default   | Description                        |
+| :---------- | :---------------- | :-------- | :---------------------------------- |
+| copyText    | string            | Copy      | Text shown on the copy button       |
+| copiedText  | string            | Copied    | Text shown after successful copy    |
+| timeout     | number            | 2000      | How long to show copiedText (ms)    |
+| align       | 'left' / 'right'  | right     | Copy button alignment               |
 
 ## Events
 

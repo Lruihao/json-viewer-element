@@ -11,7 +11,7 @@
 - 🔑 **排序**：支持键排序
 - 🔍 **展开深度**：可控初始展开层级
 - 🧩 **自定义复制按钮**：slot 插槽支持
-- 🧬 **类型高亮**：多种类型高亮
+- 🧬 **类型高亮**：丰富多彩的类型高亮
 - 🛠️ **自定义事件**：支持 copy/toggle 事件监听
 
 ## 使用方法
@@ -38,6 +38,8 @@ import 'json-viewer-element'
 
 ### 基本用法
 
+手动绑定 value：
+
 ```html
 <json-viewer id="viewer" boxed copyable sort expand-depth="2" theme="dark"></json-viewer>
 <script>
@@ -45,8 +47,29 @@ import 'json-viewer-element'
 </script>
 ```
 
+直接在标签上绑定 value：
+
 ```html
 <json-viewer value='{"hello":"world","arr":[1,2,3]}' boxed copyable sort expand-depth="2" theme="dark"></json-viewer>
+```
+
+> [!TIP]
+> 在 Vue 等框架中使用时，value 和 copyable 对象的值需要转成字符串传入。
+
+```vue
+<template>
+  <json-viewer :value="JSON.stringify(json)" boxed copyable sort expand-depth="2" theme="dark"></json-viewer>
+</template>
+
+<script>
+export default {
+  data() {
+    return {
+      json: { hello: "world", arr: [1,2,3] },
+    }
+  },
+}
+</script>
 ```
 
 ## 属性
