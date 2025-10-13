@@ -319,18 +319,21 @@ export class JsonViewerElement extends HTMLElement {
       if (!customCopyButton) {
         let copyTimeout: number;
         defaultCopyBtn.textContent = copyableOptions.copyText;
+        const newBtn = defaultCopyBtn.cloneNode(true) as HTMLElement;
+        defaultCopyBtn.replaceWith(newBtn);
 
-        defaultCopyBtn.addEventListener('click', () => {
+        newBtn.textContent = copyableOptions.copyText;
+
+        newBtn.addEventListener('click', () => {
           const textToCopy = JSON.stringify(this._value, null, 2);
           this.copyText(textToCopy).then(() => {
-            defaultCopyBtn.textContent = copyableOptions.copiedText;
+            newBtn.textContent = copyableOptions.copiedText;
 
             copyTimeout = window.setTimeout(() => {
-              defaultCopyBtn.textContent = copyableOptions.copyText;
+              newBtn.textContent = copyableOptions.copyText;
               clearTimeout(copyTimeout);
             }, copyableOptions.timeout);
 
-            // fixme)) 这里会有触发多次的 BUG
             this.dispatchEvent(new CustomEvent('copy-success', {
               detail: { text: textToCopy, options: copyableOptions }
             }));

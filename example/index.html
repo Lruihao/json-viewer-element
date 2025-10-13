@@ -458,12 +458,12 @@
         resultDiv.style.border = '1px solid #81d4fa';
         resultDiv.innerHTML = `
           <strong>🎯 自定义操作执行成功！</strong><br>
-          <small>数据类型: ${Array.isArray(jsonData) ? 'Array' : typeof jsonData}</small><br>
-          <small>键数量: ${typeof jsonData === 'object' && jsonData !== null ? Object.keys(jsonData).length : 'N/A'}</small><br>
-          <small>操作时间: ${new Date().toLocaleTimeString()}</small>
+          <small>数据类型：${Array.isArray(jsonData) ? 'Array' : typeof jsonData}</small><br>
+          <small>键数量：${typeof jsonData === 'object' && jsonData !== null ? Object.keys(jsonData).length : 'N/A'}</small><br>
+          <small>操作时间：${new Date().toLocaleTimeString()}</small>
         `;
         
-        // 3秒后隐藏结果
+        // 3 秒后隐藏结果
         setTimeout(() => {
           resultDiv.style.display = 'none';
         }, 3000);
