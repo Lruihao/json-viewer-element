@@ -27,7 +27,7 @@
   "scripts": {
     "dev": "vite demo",
     "build": "vite build && npm run build:dts",
-    "build:demo": "vite build demo",
+    "build:demo": "vite build demo --base /json-viewer-element",
     "build:dts": "tsc --emitDeclarationOnly --outDir dist"
   },
   "devDependencies": {
