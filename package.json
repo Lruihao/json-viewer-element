@@ -2,6 +2,7 @@
   "name": "json-viewer-element",
   "version": "1.0.0",
   "type": "module",
+  "packageManager": "pnpm@10.15.1",
   "description": "A custom element for viewing and interacting with JSON data.",
   "main": "dist/json-viewer-element.es.js",
   "types": "dist/json-viewer-element.d.ts",
@@ -11,8 +12,7 @@
   "keywords": [
     "json-viewer",
     "web-component",
-    "custom-element",
-    "lit-element"
+    "custom-element"
   ],
   "homepage": "https://github.com/Lruihao/json-viewer-element#readme",
   "bugs": {
@@ -25,8 +25,9 @@
   "license": "MIT",
   "author": "Lruihao (https://lruihao.cn)",
   "scripts": {
-    "dev": "vite example",
+    "dev": "vite demo",
     "build": "vite build && npm run build:dts",
+    "build:demo": "vite build demo",
     "build:dts": "tsc --emitDeclarationOnly --outDir dist"
   },
   "devDependencies": {
