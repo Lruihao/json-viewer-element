@@ -1,3 +1,10 @@
+/**
+ * Options for copyable feature.
+ * @property {string} [copyText] Text shown on the copy button
+ * @property {string} [copiedText] Text shown after successful copy
+ * @property {number} [timeout] How long to show copiedText (ms)
+ * @property {'left'|'right'} [align] Copy button alignment
+ */
 export interface CopyableOptions {
   copyText?: string;
   copiedText?: string;
@@ -5,6 +12,16 @@ export interface CopyableOptions {
   align?: 'left' | 'right';
 }
 
+/**
+ * Props for JsonViewerElement.
+ * @property {*} value JSON data to display
+ * @property {number} [expandDepth] Initial expand depth
+ * @property {boolean|CopyableOptions} [copyable] Enable copy button
+ * @property {boolean} [sort] Whether to sort object keys
+ * @property {boolean} [boxed] Whether to show a box around the viewer
+ * @property {'light'|'dark'} [theme] Theme
+ * @property {boolean} [parse] Whether to parse string value as JSON
+ */
 export interface JsonViewerElementProps {
   value: any;
   expandDepth?: number;
@@ -200,7 +217,6 @@ slot[name="copy-button"].align-right {
 </slot>
 `;
 
-/* ---------- 组件主体 ---------- */
 export class JsonViewerElement extends HTMLElement {
   static get observedAttributes() {
     return [
@@ -220,6 +236,7 @@ export class JsonViewerElement extends HTMLElement {
 
   constructor() {
     super();
+    // Attach shadow DOM and clone template
     this.root = this.attachShadow({ mode: 'open' });
     this.root.appendChild(tpl.content.cloneNode(true));
     this.container = this.root.getElementById('root')!;
@@ -233,7 +250,7 @@ export class JsonViewerElement extends HTMLElement {
     this.render();
   }
 
-  /* ---- 公开属性 ---- */
+  // ----- Public property: value -----
   set value(v: any) {
     if (v === this._value) return;
     this._value = v;
@@ -243,7 +260,7 @@ export class JsonViewerElement extends HTMLElement {
     return this._value ?? this.getAttribute('value');
   }
 
-  /* ---------- 私有 getter ---------- */
+  // ----- Private getters for props -----
   private get expandDepth() {
     return Number(this.getAttribute('expand-depth') ?? 1);
   }
@@ -271,11 +288,15 @@ export class JsonViewerElement extends HTMLElement {
     }
   }
 
+  /**
+   * Copy text to clipboard. Uses Clipboard API if available, otherwise fallback.
+   */
   private copyText(text: string): Promise<void> {
     if (navigator.clipboard) {
       this.copyText = (text: string) => navigator.clipboard.writeText(text);
       return this.copyText(text);
     }
+    // Fallback for older browsers
     this.copyText = (text: string) => new Promise((resolve, reject) => {
       const input = document.createElement('input');
       input.value = text;
@@ -292,8 +313,11 @@ export class JsonViewerElement extends HTMLElement {
     return this.copyText(text);
   }
 
-  /* ---- 渲染 ---- */
+  /**
+   * Render the JSON viewer.
+   */
   private render() {
+    // Parse string value if needed
     if (typeof this.value === 'string' && this.parse) {
       try {
         this._value = JSON.parse(this.value);
@@ -302,6 +326,7 @@ export class JsonViewerElement extends HTMLElement {
       }
     }
 
+    // Clear and rebuild the tree
     this.container.innerHTML = '';
     this.container.appendChild(this.build(this._value, 0));
 
@@ -319,11 +344,13 @@ export class JsonViewerElement extends HTMLElement {
       if (!customCopyButton) {
         let copyTimeout: number;
         defaultCopyBtn.textContent = copyableOptions.copyText;
+        // Remove previous event by replacing node (ensures only one listener)
         const newBtn = defaultCopyBtn.cloneNode(true) as HTMLElement;
         defaultCopyBtn.replaceWith(newBtn);
 
         newBtn.textContent = copyableOptions.copyText;
 
+        // Bind copy event
         newBtn.addEventListener('click', () => {
           const textToCopy = JSON.stringify(this._value, null, 2);
           this.copyText(textToCopy).then(() => {
@@ -349,7 +376,9 @@ export class JsonViewerElement extends HTMLElement {
     }
   }
 
-  /* ---- 递归建树 ---- */
+  /**
+   * Recursively build the JSON tree.
+   */
   private build(data: any, depth: number): Node {
     if (data === null) return this.leaf('null', 'jv-null');
     if (data === undefined) return this.leaf('undefined', 'jv-undefined');
@@ -377,7 +406,7 @@ export class JsonViewerElement extends HTMLElement {
       const childNode = this.build(data[k], depth + 1);
       item.className = 'jv-item';
 
-      // 如果子节点是对象或数组，将 toggle 按钮移到前面
+      // If child is an object/array, move toggle button to front
       if (childNode instanceof Element && childNode.classList.contains('jv-node')) {
         const childToggle = childNode.querySelector('.jv-toggle');
         if (childToggle) {
@@ -397,11 +426,10 @@ export class JsonViewerElement extends HTMLElement {
       list.append(item);
     }
 
-    /* 折叠按钮 */
+    // Toggle button for collapse/expand
     const toggle = document.createElement('span');
     toggle.className = 'jv-toggle';
     toggle.setAttribute('part', 'toggle');
-    // 如果节点不是折叠状态，则按钮为 open 状态
     if (!node.classList.contains('collapsed')) {
       toggle.classList.add('open');
     }
@@ -417,7 +445,7 @@ export class JsonViewerElement extends HTMLElement {
       }));
     });
 
-    /* 省略号 */
+    // Ellipsis for collapsed nodes
     const ellipsis = document.createElement('span');
     ellipsis.className = 'jv-ellipsis';
     ellipsis.setAttribute('part', 'ellipsis');
@@ -433,12 +461,15 @@ export class JsonViewerElement extends HTMLElement {
     }
     if (!keys.length) node.classList.add('empty');
 
-    /* 组装 DOM */
+    // Assemble node
     node.append(toggle, isArr ? '[' : '{', ellipsis, list, isArr ? ']' : '}');
 
     return node;
   }
 
+  /**
+   * Create a leaf node for primitive values.
+   */
   private leaf(text: string, cls: string) {
     const s = document.createElement('span');
     s.className = `jv-value ${cls}`;
@@ -450,7 +481,7 @@ export class JsonViewerElement extends HTMLElement {
 
 customElements.define('json-viewer', JsonViewerElement);
 
-// 导出类型以便外部引用
+// Export type for global usage
 declare global {
   interface HTMLElementTagNameMap {
     'json-viewer': JsonViewerElement;
