@@ -14,7 +14,7 @@ export interface CopyableOptions {
 
 /**
  * Props for JsonViewerElement.
- * @property {*} value JSON data to display
+ * @property {object | Array<any> | string | number | boolean} value JSON data to display
  * @property {number} [expandDepth] Initial expand depth
  * @property {boolean|CopyableOptions} [copyable] Enable copy button
  * @property {boolean} [sort] Whether to sort object keys
@@ -23,7 +23,7 @@ export interface CopyableOptions {
  * @property {boolean} [parse] Whether to parse string value as JSON
  */
 export interface JsonViewerElementProps {
-  value: any
+  value: object | Array<any> | string | number | boolean
   expandDepth?: number
   copyable?: boolean | CopyableOptions
   sort?: boolean

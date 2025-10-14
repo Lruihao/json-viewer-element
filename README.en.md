@@ -53,8 +53,7 @@ Set value by attribute:
 <json-viewer value='{"hello":"world","arr":[1,2,3]}' boxed copyable sort expand-depth="2" theme="dark"></json-viewer>
 ```
 
-> [!TIP]
-> When using with frameworks like Vue, you should pass value and copyable props as strings.
+Use in Vue framework:
 
 ```vue
 <template>
@@ -74,15 +73,18 @@ export default {
 
 ## Props
 
-| Prop         | Type                      | Default | Description                                                                 |
-| :----------- | :------------------------ | :------ | :-------------------------------------------------------------------------- |
-| value        | any                       |         | JSON data                                                                   |
-| expand-depth | number                    | 1       | Initial expand depth                                                        |
-| copyable     | boolean / CopyableOptions | false   | Enable copy button or custom copy button config (see below)                 |
-| sort         | boolean                   | false   | Whether to sort object keys                                                 |
-| boxed        | boolean                   | false   | Whether to show border and padding                                          |
-| theme        | 'light' / 'dark'          | 'light' | Theme                                                                       |
-| parse        | boolean                   | true    | Whether to parse string value as JSON                                       |
+> [!TIP]
+> When using with frameworks like Vue, you should pass value and copyable props as strings.
+
+| Prop         | Type                                       | Default | Description                                                 |
+| :----------- | :----------------------------------------- | :------ | :---------------------------------------------------------- |
+| value        | object / array / string / number / boolean | null    | JSON data                                                   |
+| expand-depth | number                                     | 1       | Initial expand depth                                        |
+| copyable     | boolean / CopyableOptions                  | false   | Enable copy button or custom copy button config (see below) |
+| sort         | boolean                                    | false   | Whether to sort object keys                                 |
+| boxed        | boolean                                    | false   | Whether to show border and padding                          |
+| theme        | 'light' / 'dark'                           | 'light' | Theme                                                       |
+| parse        | boolean                                    | true    | Whether to parse string value as JSON                       |
 
 ### CopyableOptions
 
