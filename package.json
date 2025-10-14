@@ -29,10 +29,12 @@
     "build": "vite build && npm run build:dts",
     "build:demo": "vite build demo --base /json-viewer-element",
     "build:dts": "tsc --emitDeclarationOnly --outDir dist",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "version": "auto-changelog-plus -p && git add CHANGELOG.md"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^5.4.1",
+    "auto-changelog-plus": "^1.2.1",
     "eslint": "^9.36.0",
     "terser": "^5.44.0",
     "typescript": "^5.9.3",
