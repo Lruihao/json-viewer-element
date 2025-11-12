@@ -250,7 +250,6 @@ export class JsonViewerElement extends HTMLElement {
     this.render()
   }
 
-  // ----- Public property: value -----
   set value(v: any) {
     if (v === this._value)
       return
@@ -262,24 +261,32 @@ export class JsonViewerElement extends HTMLElement {
     return this._value ?? this.getAttribute('value')
   }
 
-  // ----- Private getters for props -----
-  private get expandDepth() {
-    return Number(this.getAttribute('expand-depth') ?? 1)
+  set sort(v: boolean) {
+    this.setAttribute('sort', v ? 'true' : 'false')
   }
 
-  private get sort() {
+  get sort() {
     return this.hasAttribute('sort')
   }
 
-  private get theme() {
-    return this.getAttribute('theme') || 'light'
+  set parse(v: boolean) {
+    this.setAttribute('parse', v ? 'true' : 'false')
   }
 
-  private get parse() {
+  get parse() {
     return this.getAttribute('parse') !== 'false'
   }
 
-  private get copyable(): CopyableOptions | false {
+  set copyable(v: CopyableOptions | false) {
+    if (v === false) {
+      this.removeAttribute('copyable')
+    }
+    else {
+      this.setAttribute('copyable', JSON.stringify(v))
+    }
+  }
+
+  get copyable(): CopyableOptions | false {
     if (!this.hasAttribute('copyable'))
       return false
     const attr = this.getAttribute('copyable')
@@ -295,6 +302,10 @@ export class JsonViewerElement extends HTMLElement {
     catch {
       return defaultCopyableOptions
     }
+  }
+
+  private get expandDepth() {
+    return Number(this.getAttribute('expand-depth') ?? 1)
   }
 
   /**
