@@ -1,7 +1,7 @@
 {
   "name": "json-viewer-element",
   "type": "module",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "packageManager": "pnpm@10.18.2",
   "description": "A custom element for viewing and interacting with JSON data.",
   "author": "Lruihao (https://lruihao.cn)",
