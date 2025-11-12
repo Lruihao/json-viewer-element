@@ -1,5 +1,7 @@
 # &lt;json-viewer&gt; Element
 
+[简体中文](./README.md) | English
+
 > 🌈 A lightweight, modern Web Component for JSON visualization and interaction.
 
 ## Features

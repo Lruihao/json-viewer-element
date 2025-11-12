@@ -1,5 +1,7 @@
 # &lt;json-viewer&gt; Element
 
+简体中文 | [English](./README.en.md)
+
 > 🌈 一个轻量、现代的 JSON 可视化与交互 Web 组件
 
 ## 功能特性
