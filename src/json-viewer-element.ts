@@ -366,21 +366,21 @@ export class JsonViewerElement extends HTMLElement {
 
       if (!customCopyButton) {
         let copyTimeout: number
-        defaultCopyBtn.textContent = copyableOptions.copyText
+        defaultCopyBtn.textContent = copyableOptions.copyText ?? null
         // Remove previous event by replacing node (ensures only one listener)
         const newBtn = defaultCopyBtn.cloneNode(true) as HTMLElement
         defaultCopyBtn.replaceWith(newBtn)
 
-        newBtn.textContent = copyableOptions.copyText
+        newBtn.textContent = copyableOptions.copyText ?? null
 
         // Bind copy event
         newBtn.addEventListener('click', () => {
           const textToCopy = JSON.stringify(this._value, null, 2)
           this.copyText(textToCopy).then(() => {
-            newBtn.textContent = copyableOptions.copiedText
+            newBtn.textContent = copyableOptions.copiedText ?? null
 
             copyTimeout = window.setTimeout(() => {
-              newBtn.textContent = copyableOptions.copyText
+              newBtn.textContent = copyableOptions.copyText ?? null
               clearTimeout(copyTimeout)
             }, copyableOptions.timeout)
 
