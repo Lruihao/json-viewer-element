@@ -88,6 +88,7 @@ tpl.innerHTML = `
   position: relative;
   background-color: var(--jv-bg-color);
   color: var(--jv-text-color);
+  direction: ltr;
 }
 
 :host([boxed]) {
