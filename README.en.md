@@ -152,12 +152,12 @@ export default {
 
 ### CopyableOptions
 
-| Prop        | Type              | Default   | Description                        |
-| :---------- | :---------------- | :-------- | :---------------------------------- |
-| copyText    | string            | Copy      | Text shown on the copy button       |
-| copiedText  | string            | Copied    | Text shown after successful copy    |
-| timeout     | number            | 2000      | How long to show copiedText (ms)    |
-| align       | 'left' / 'right'  | right     | Copy button alignment               |
+| Prop       | Type             | Default | Description                      |
+| :--------- | :--------------- | :------ | :------------------------------- |
+| copyText   | string           | Copy    | Text shown on the copy button    |
+| copiedText | string           | Copied  | Text shown after successful copy |
+| timeout    | number           | 2000    | How long to show copiedText (ms) |
+| align      | 'left' / 'right' | right   | Copy button alignment            |
 
 ## Events
 
